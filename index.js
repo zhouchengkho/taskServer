@@ -6,7 +6,7 @@ var app = express();
 var task = require('./task');
 var schedule = require('node-schedule');
 var test = require('./test');
-
+var config = require('./config');
 app.post('/requesttask', function(req,res) {
     console.log('request task');
     task.distribute(function(data) {
@@ -30,14 +30,15 @@ rule.second = times;
 for(var i=1; i<60; i=i+2){
     times.push(i);
 }
-schedule.scheduleJob(rule, function() { // test pick up task
-    console.log('request task');
-    task.distribute(function(res) {
-        console.log('item distributed: '+JSON.stringify(res));
-    });
-});
+//schedule.scheduleJob(rule, function() { // test pick up task
+//    console.log('request task');
+//    task.distribute(function(res) {
+//        console.log('item distributed: '+JSON.stringify(res));
+//    });
+//});
 
 schedule.scheduleJob({hour:0, minute:0, dayOfWeek:0}, function(){ // pick up task at sunday 00:00:00
     console.log('pick up new task');
 });
-app.listen(3000);
+console.log('server running at '+config.serverPort);
+app.listen(config.serverPort);

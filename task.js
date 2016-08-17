@@ -21,7 +21,7 @@ var low = config.low;
 var handling = config.handling;
 function task() {
     /**
-     *right push for redis list
+     * right push for redis list
      * @param prior true for higher priority
      * @param value can be array or single value , can be string or json but always stored as string
      */
@@ -81,7 +81,7 @@ function task() {
                 })
             } else { //get from low
                 client.lrange(low, 0, -1, function(err, list) {
-                  if(list.length >= 1) {
+                    if(list.length >= 1) {
                       var result = JSON.parse(list[0]);
                       client.hset(handling,result.key, list[0], function(err, res) {
                           client.lpop(low, function(err, res) {

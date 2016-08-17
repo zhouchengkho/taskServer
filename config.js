@@ -9,6 +9,8 @@ var config = {
     mysqlPassword: '',
     redisHost: '127.0.0.1',
     redisPort: 6379,
+    serverPort: 3000,
+    serverUrl: '',
     high: 'high',
     low: 'low',
     handling: 'handling'
