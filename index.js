@@ -36,9 +36,9 @@ for(var i=1; i<60; i=i+2){
 //        console.log('item distributed: '+JSON.stringify(res));
 //    });
 //});
-
-schedule.scheduleJob({hour:0, minute:0, dayOfWeek:0}, function(){ // pick up task at sunday 00:00:00
-    console.log('pick up new task');
-});
+//
+//schedule.scheduleJob({hour:0, minute:0, dayOfWeek:0}, function(){ // pick up task at sunday 00:00:00
+//    console.log('pick up new task');
+//});
 console.log('server running at '+config.serverPort);
 app.listen(config.serverPort);

@@ -5,11 +5,11 @@ var redis = require('redis');
 var bluebird = require('bluebird'); // for async
 var test = require('./test');
 var config = require('./config');
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
 
 var client = redis.createClient({host: config.redisHost, port: config.redisPort});
 var crawled_data = require('./model').crawled_data;
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
 client.on('error', function(error) {
     console.log('error: '+error);
 })
@@ -41,8 +41,7 @@ function task() {
                 {
                     result = JSON.stringify(result);
                 }
-                multi.rpush(priority, result);
-
+                multi.rpushAsync(priority, result).catch(function(err){console.log(err)});
             }
             multi.exec();
         } else {
@@ -51,7 +50,7 @@ function task() {
             {
                 result = JSON.stringify(result);
             }
-            client.rpush(priority, result);
+            client.rpushAsync(priority, result).catch(function(err){console.log(err)});
         }
     }
     /**
@@ -115,18 +114,17 @@ function task() {
             var toCreate = {};
             toCreate.key = key;
             toCreate.data = data;
-            crawled_data.create(toCreate, function (err, res) {
-                console.log(res);
+            crawled_data.create(toCreate).then(function() {
                 client.hdel(handling, key);
             })
         } else { // move key from handling to low
-            client.hgetall(handling, function(err, res) {
+            client.hgetallAsync(handling).then(function(res) {
                 var result = res[key];
                 if (result) {
                     self.rpush(false, result);
                     client.hdel(handling, key);
                 }
-            })
+            }).catch(function(err){console.log(err)})
         }
 
     }

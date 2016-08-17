@@ -15,7 +15,7 @@ var sequelize = new Sequelize(config.mysqlDB, config.mysqlUser, config.mysqlPass
 });
 
 
-sequelize.getQueryInterface().createTable('test', {
+sequelize.getQueryInterface().createTable('crawler_data', {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
