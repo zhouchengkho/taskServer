@@ -7,40 +7,70 @@ function test() {
 
     this.getHighValue = function() {
         var high = [{
-            key: uuid.v4(),
-            url:'dasda'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'sas'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'dasda'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'dasda'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'dasdaff'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         }
         ];
         return high;
     }
     this.getLowValue = function() {
         var low = [{
-            key: uuid.v4(),
-            url:'fdfg'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'utyh'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'poggfd'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'dasda'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         },{
-            key: uuid.v4(),
-            url:'dasjdaj'
+            taskId: uuid.v4(),
+            template: {
+                templateId:'test',
+                content:'test'
+            }
         }];
         return low;
     }

@@ -13,7 +13,9 @@ var config = {
     serverUrl: '',
     high: 'high',
     low: 'low',
-    handling: 'handling'
+    handling: 'handling',
+    script: 'script',
+    scriptKey: 'current'
 }
 
 
