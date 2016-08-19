@@ -15,7 +15,8 @@ var config = {
     low: 'low',
     handling: 'handling',
     script: 'script',
-    scriptKey: 'current'
+    scriptKey: 'current',
+    maxTaskCount: 10
 }
 
 
