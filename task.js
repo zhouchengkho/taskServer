@@ -236,7 +236,7 @@ function task() {
 
     /**
      * get result for customer
-     * @param data can contain a uid array for the result needed, if not provided then return all
+     * @param data can contain a uidSet array for the result needed, if not provided then return all
      * @param callback
      */
     this.getResult = function(data, callback) {
@@ -251,7 +251,7 @@ function task() {
                 var result = {};
                 client.hgetallAsync('result_'+data.customerId).then(function(res) {
                     for(var i = 0;i<set.length;i++) {
-                        result.set[i] = res.set[i]
+                        result[set[i]] = res[set[i]]
                     }
                     return callback(null, result)
                 }).catch(function(err){return callback(err)})
