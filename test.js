@@ -7,34 +7,49 @@ function test() {
 
     this.getHighValue = function() {
         var high = [{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'keyun'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'keyun'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'keyun'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'lifeng'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'lifeng'
             }
         }
         ];
@@ -42,34 +57,49 @@ function test() {
     }
     this.getLowValue = function() {
         var low = [{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'keyun'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'keyun'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'lifeng'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'lifeng'
             }
         },{
-            taskId: uuid.v4(),
             template: {
-                templateId:'test',
-                content:'test'
+                templateId: 'test',
+                content: 'test'
+            },
+            customerData: {
+                uid: uuid.v4(),
+                customerId: 'lifeng'
             }
         }];
         return low;

@@ -3,13 +3,15 @@
  */
 var redis = require('redis');
 var bluebird = require('bluebird'); // for async
+var uuid = require('uuid');
 var test = require('./test');
 var config = require('./config');
 var error = require('./error');
 var client = redis.createClient({host: config.redisHost, port: config.redisPort});
-var crawled_data = require('./model').crawled_data;
+// var crawled_data = require('./model').crawled_data;
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
+
 client.on('error', function(error) {
     console.log('error: '+error);
 })
@@ -55,58 +57,65 @@ function task() {
             client.rpushAsync(priority, result).catch(function(err){return callback(err)});
         }
     }
+
     /**
      *  for test
      */
-    this.initialize = function(callback) {
+    this.initialize = function() {
         var high = test.getHighValue();
+        for (var i=0; i< high.length; i++) {
+            high[i].taskId = uuid.v4();
+        }
         var low = test.getLowValue();
+        for (var i=0; i< low.length; i++) {
+            low[i].taskId = uuid.v4();
+        }
         this.rpush(true, high);
         this.rpush(false, low);
-        return callback()
     }
+
     /**
      * distribute task or script or both
      * @param key should be task, script, both
-     * @param data include customerData & count
+     * @param data include  count
      * @param callback err, data  keep err null if no error
      */
     this.distribute = function(key, data, callback) {
-        var customerData = data.customerData;
+        // var customerData = data.customerData;
+        if(typeof data == 'string')
+            data = JSON.parse(data)
         var count = data.taskCount ? data.taskCount : 1;
         var self = this;
-        self.verifyCustomer(customerData.custId, customerData.verifyCode, function(valid){
-            if(!valid)
-                return callback(new Error(error.verifyFail))
-            switch (key) {
-                case 'task':
-                    self.getTask(count, function(err, res) {
-                        return callback(err, res)
-                    })
-                    break;
-                case 'script':
-                    self.getScript(scriptKey, function (err, res) {
-                        return callback(err, res)
-                    })
-                    break;
-                case 'both':
-                    self.getScript(scriptKey, function (scriptErr, scriptRes) {
-                        if(scriptErr) return callback(scriptErr)
-                        self.getTask(count, function(taskErr, taskRes) {
-                            var res = {
-                                taskRes: taskRes,
-                                scriptRes: scriptRes
-                            }
-                            return callback(taskErr, res)
-                        })
-                    })
 
-                    break;
-                default:
-                    return callback(new Error(error.unknownkey))
-                    break;
-            }})
+        switch (key) {
+            case 'task':
+                self.getTask(count, function(err, res) {
+                    return callback(err, res)
+                })
+                break;
+            case 'script':
+                self.getScript(scriptKey, function (err, res) {
+                    return callback(err, res)
+                })
+                break;
+            case 'both':
+                self.getScript(scriptKey, function (scriptErr, scriptRes) {
+                    if(scriptErr) return callback(scriptErr)
+                    self.getTask(count, function(taskErr, taskRes) {
+                        var res = {
+                            taskRes: taskRes,
+                            scriptRes: scriptRes
+                        }
+                        return callback(taskErr, res)
+                    })
+                })
+                break;
+            default:
+                return callback(new Error(error.unknownkey))
+                break;
+        }
     }
+
     this.getTask = function(count, callback) {
         if(count > maxTaskCount) {
             return callback(new Error(error.countToBig))
@@ -158,81 +167,114 @@ function task() {
             return callback(new Error(error.emptyScript))
         }).catch(function(err){return callback(err)})
     }
+
     /**
      * receive report from user, if success, store data as result_customerId
      * else put task back to waiting queue with low priority
-     * @param status
-     * @param data
-     * @param customerData
+     * @param reqBody
      * @param callback
      * @returns {*}
      */
-    this.report = function(status, data, customerData, callback) {
-
+    this.report = function(reqBody, callback) {
         var self = this;
-        self.verifyCustomer(customerData.custId, customerData.verifyCode, function(valid) {
-            if(!valid)
-                return callback(new Error(error.verifyFail))
-
-            switch(status) {
-                case 'success':
-                    var key = 'result_'+customerData.custId;
-                    var field;
-                    var result;
-                    if(data.constructor == Array) {
-                        var fieldAndResultArray = []
+        if(typeof reqBody == 'string')
+            reqBody = JSON.parse(reqBody)
+        var status = reqBody.status;
+        var data = reqBody.data;
+        switch(status) {
+            case 'success':
+                var key;
+                var field;
+                var result;
+                if(data.constructor == Array) {
+                    var fieldAndResultArray = []
+                    for (var i=0; i<data.length; i++) {
+                        field = data[i].customerData.uid;
+                        result = data[i].result;
+                        key = 'result_'+data[i].customerData.customerId;
+                        fieldAndResultArray.push(field)
+                        fieldAndResultArray.push((typeof result == 'object') ? JSON.stringify(result) : result)
+                        client.hdel(handling, data[i].taskId);
+                        client.hset(key, field, result)
+                    }
+                    // client.hmsetAsync(key, fieldAndResultArray).catch(function(err){return callback(err)})
+                } else {
+                    key = 'result_'+data.customerData.customerId;
+                    field = data.customerData.uid;
+                    result = data.result;
+                    if((typeof  result) == 'object')
+                        result = JSON.stringify(result);
+                    client.hdel(handling, data.taskId);
+                    client.hset(key, field, result);
+                }
+                break;
+            default:
+                if(data.constructor == Array) {
+                    client.hgetallAsync(handling).then(function(res) {
                         for (var i=0; i<data.length; i++) {
-                            field = data[i].task.taskId;
-                            result = data[i].result;
-                            fieldAndResultArray.push(field)
-                            fieldAndResultArray.push((typeof result == 'object') ? JSON.stringify(result) : result)
-                            client.hdel(handling, field);
-                        }
-                        client.hmsetAsync(key, fieldAndResultArray).catch(function(err){return callback(err)})
-                    } else {
-                        field = data.task.taskId;
-                        result = data.result;
-                        if((typeof  result) == 'object')
-                            result = JSON.stringify(result);
-                        client.hset(key, field, result);
-                        client.hdel(handling, field);
-                    }
-                    break;
-                default:
-                    if(data.constructor == Array) {
-                        client.hgetallAsync(handling).then(function(res) {
-                            return res;
-                        }).then(function(res){
-                            for (var i=0; i<data.length; i++) {
-                                var taskId = data[i].task.taskId;
-                                var result = res[data[i].task.taskId]
-                                if (result) {
-                                    self.rpush(false, result);
-                                    client.hdel(handling, taskId);
-                                }
-                            }
-                        }).catch(function(err){return callback(err)})
-                    }
-                    else {
-                        client.hgetallAsync(handling).then(function(res) {
-                            return res[data.task.taskId];
-                        }).then(function(result){
+                            var taskId = data[i].taskId;
+                            var result = res[data[i].taskId]
                             if (result) {
                                 self.rpush(false, result);
-                                client.hdel(handling, data.task.taskId);
+                                client.hdel(handling, taskId);
                             }
-                        }).catch(function(err){return callback(err)})
-                    }
-                    break;
-            }
-        })
-        return callback()
+                        }
+                    }).catch(function(err){return callback(err)})
+                }
+                else {
+                    client.hgetAsync(handling, data.taskId).then(function(result) {
+                        if (result) {
+                            self.rpush(false, result);
+                            client.hdel(handling, data.taskId);
+                        }
+                    }).catch(function(err){return callback(err)})
+                }
+                break;
+        }
+        callback()
     }
 
+    /**
+     * get result for customer
+     * @param data can contain a uid array for the result needed, if not provided then return all
+     * @param callback
+     */
+    this.getResult = function(data, callback) {
+        var self = this;
+        if(typeof data == 'string')
+            data = JSON.parse(data)
+        self.verifyCustomer(data.customerId, data.verifyCode, function(valid) {
+            if(!valid)
+                return callback(new Error(error.verifyFail))
+            var set = data.uidSet;
+            if(set) {
+                var result = {};
+                client.hgetallAsync('result_'+data.customerId).then(function(res) {
+                    for(var i = 0;i<set.length;i++) {
+                        result.set[i] = res.set[i]
+                    }
+                    return callback(null, result)
+                }).catch(function(err){return callback(err)})
 
-    this.verifyCustomer = function(custId, verifyCode, callback) {
+            } else {
+                client.hgetallAsync('result_'+data.customerId).then(function(res){
+                    return callback(null, res)
+                }).catch(function(err){return callback(err)})
+            }
+
+        })
+    }
+    /**
+     * verify customer
+     * @param customerId
+     * @param verifyCode
+     * @param callback valid(true or false)
+     */
+    this.verifyCustomer = function(customerId, verifyCode, callback) {
         callback(true)
     }
+
+
 }
 
 
