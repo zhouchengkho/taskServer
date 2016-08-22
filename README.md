@@ -32,7 +32,8 @@
   }]
 }
 ```
-// data can be array or json
+
+> data can be array or json
 
 * customer request format
 ```
@@ -42,7 +43,8 @@
 	"uidSet":[]
 }
 ```
-// if !uidSet , default return all data
+
+> if !uidSet , default return all data
 
 
 * general
