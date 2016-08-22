@@ -13,12 +13,15 @@
 
 ##request data format
 * request task format
+
 ```
 {
   "taskCount": 2
 }
 ```
+
 * report format
+
 ```
 {
   "status": "success",
@@ -36,6 +39,7 @@
 > data can be array or json
 
 * customer request format
+
 ```
 {
 	"customerId":"",
@@ -48,6 +52,7 @@
 
 
 * general
+
 ```
 {
   "taskCount": 2,
