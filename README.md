@@ -13,13 +13,13 @@
 
 ##request data format
 * request task format
-```javascript
+
 {
   "taskCount": 2
 }
-```
+
 * report format
-```jsvascript
+
 {
   "status": "success",
   "data":[{
@@ -31,22 +31,22 @@
   	"result":"dasdasdasdas"
   }]
 }
-```
+
 // data can be array or json
 
 * customer request format
-```javascript
+
 {
 	"customerId":"",
 	"verifyCode":"",
 	"uidSet":[]
 }
-```
+
 // if !uidSet , default return all data
 
 
 * general
-```javsscript
+
 {
   "taskCount": 2,
   "status": "fail",
@@ -62,4 +62,3 @@
   "verifyCode":"",
   "uidSet":["dasdada"]
 }
-```
