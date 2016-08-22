@@ -121,3 +121,27 @@ script content
 	"uid1":"uid1 content"
 }
 ```
+
+* POST /filltask
+
+```
+{
+  "priority":"high",
+  "data":[{
+    "template":
+    {
+      "templateId": "test",
+      "content": "test"
+    },
+    "customerData": 
+    {
+      "uid": "unique id",
+      "customerId": "keyun"
+    }
+  }]
+}
+```
+
+`Return`
+
+`Success or Error Info`
