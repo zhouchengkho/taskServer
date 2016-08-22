@@ -12,15 +12,74 @@
 
 
 ##request data format
-* request task format
+* POST /requesttask
 
 ```
 {
-  "taskCount": 2
+  "taskCount": 1
 }
 ```
 
-* report format
+`Return`
+
+```
+[
+    {
+        "template": {
+            "templateId": "test",
+            "content": "test"
+        },
+        "customerData": {
+            "uid": "04afaa30-2943-47a0-977b-4be01ae5cabc",
+            "customerId": "lifeng"
+        },
+        "taskId": "4f08f2f0-7154-4fb4-9e26-49282c3e005e"
+    }
+]
+```
+
+* POST /requestscript
+
+```
+{}
+```
+
+`Return`
+
+```
+script content
+```
+
+* POST /requestboth
+
+```
+{
+  "taskCount": 1
+}
+```
+
+`Return`
+
+```
+{
+    "taskRes": [
+        {
+            "template": {
+                "templateId": "test",
+                "content": "test"
+            },
+            "customerData": {
+                "uid": "173f7e7e-1334-4a2e-8439-7ff6cbf5520b",
+                "customerId": ""
+            },
+            "taskId": "d564b552-f126-4639-b71a-0d93bf7bd182"
+        }
+    ],
+    "scriptRes": "getdatdasdasdada"
+}
+```
+
+* POST /report
 
 ```
 {
@@ -36,9 +95,13 @@
 }
 ```
 
+`Return`
+
+`Success or Error Info`
+
 > data can be array or json
 
-* customer request format
+* POST /customerrequest
 
 ```
 {
@@ -50,23 +113,11 @@
 
 > if !uidSet , default return all data
 
-
-* general
+`Return`
 
 ```
 {
-  "taskCount": 2,
-  "status": "fail",
-  "data":[{
-  	"taskId":"ec17fcb4-e1d3-4e7e-aaa0-c085eb0b46b0",
-  	"customerData":{
-  		"customerId":"keyun",
-  		"uid":"dasdada"
-  	},
-  	"result":"dasdasdasdas"
-  }],
-  "customerId":"keyun",
-  "verifyCode":"",
-  "uidSet":["dasdada"]
+	"uid":"uid content",
+	"uid1":"uid1 content"
 }
 ```
